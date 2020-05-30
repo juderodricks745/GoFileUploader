@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "481556491040",
+    "firebase_url": "https://gofileuploader.firebaseio.com",
+    "project_id": "gofileuploader",
+    "storage_bucket": "gofileuploader.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481556491040:android:dc473586ea9e0b169e0545",
+        "android_client_info": {
+          "package_name": "com.davidbronn.gofileuploader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481556491040-vidas47r551scea000oo0vamii8e0cm4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYZQTVbEgLXCgXVyK-VV-Ae3ppc63NVTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481556491040-vidas47r551scea000oo0vamii8e0cm4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
