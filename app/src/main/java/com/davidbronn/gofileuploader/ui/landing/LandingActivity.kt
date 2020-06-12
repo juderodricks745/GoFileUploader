@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.davidbronn.gofileuploader.R
 import com.davidbronn.gofileuploader.databinding.ActivityLandingBinding
@@ -34,6 +35,7 @@ class LandingActivity : ParentActivity() {
     private var fileType = 0
     private var fileURI: Uri? = null
     private var uploadFile: File? = null
+    private var alertDialog: AlertDialog? = null
     private lateinit var binding: ActivityLandingBinding
     private val permissions = arrayOf(Manifest.permission.CAMERA)
     private val storageRef by lazy { Firebase.storage.reference }
@@ -41,6 +43,8 @@ class LandingActivity : ParentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_landing)
+
+        createAlertDialog()
 
         binding.btnCamera.setOnClickListener {
             if (isPermissionsAllowed(permissions, true, PERMISSIONS_CAMERA)) {
@@ -57,29 +61,49 @@ class LandingActivity : ParentActivity() {
         }
 
         binding.btnUpload.setOnClickListener {
-            if (uploadFile?.exists()!!) {
-                var fileReference: StorageReference? = null
-                fileReference = if (fileType == 0) {
-                    storageRef.child("images/${uploadFile?.name}")
-                } else {
-                    storageRef.child("files/${uploadFile?.name}")
-                }
-                val uploadTask = fileReference.putFile(Uri.fromFile(uploadFile))
-                uploadTask.addOnCompleteListener { task ->
-                    if (task.isComplete) {
-                        showToast("Upload Done")
-                    }
-                    task.exception?.let {
-                        Log.e("Log", "", it)
-                        showToast("Upload Exception")
-                    }
-                }.addOnCanceledListener {
-                    showToast("Upload Cancelled")
-                }
+            if (uploadFile != null && uploadFile?.exists()!!) {
+                alertDialog?.show()
+                performFileUploading()
             } else {
                 showToast("Please select file first")
             }
         }
+    }
+
+    private fun performFileUploading() {
+        val fileReference: StorageReference?
+        fileReference = if (fileType == 0) {
+            storageRef.child("images/${uploadFile?.name}")
+        } else {
+            storageRef.child("files/${uploadFile?.name}")
+        }
+        val uploadTask = fileReference.putFile(Uri.fromFile(uploadFile))
+        uploadTask.addOnCompleteListener { task ->
+            uploadFile = null
+            if (alertDialog?.isShowing!!) {
+                alertDialog?.hide()
+            }
+            if (task.isComplete) {
+                showToast("Upload Done")
+            }
+            task.exception?.let {
+                Log.e("Log", "", it)
+                showToast("Upload Exception")
+            }
+        }.addOnCanceledListener {
+            uploadFile = null
+            if (alertDialog?.isShowing!!) {
+                alertDialog?.hide()
+            }
+            showToast("Upload Cancelled")
+        }
+    }
+
+    private fun createAlertDialog() {
+        alertDialog = AlertDialog.Builder(this)
+            .setMessage("Uploading!")
+            .setCancelable(false)
+            .create()
     }
 
     // region [CAMERA]
